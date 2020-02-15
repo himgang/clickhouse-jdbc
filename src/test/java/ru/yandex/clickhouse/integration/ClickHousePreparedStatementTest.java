@@ -380,6 +380,7 @@ public class ClickHousePreparedStatementTest {
         ClickHousePreparedStatement stmt = (ClickHousePreparedStatement)
             connection.prepareStatement("SELECT toDateTime(?)");
         stmt.setTime(1, Time.valueOf("13:37:42"));
+        System.out.println("ran testSetTime");
         ResultSet rs = stmt.executeQuery();
         rs.next();
         Assert.assertEquals(rs.getTime(1), Time.valueOf("13:37:42"));
