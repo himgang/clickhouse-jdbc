@@ -44,6 +44,7 @@ public class TimeZoneTest {
 //        int manualTimeZoneOffsetHours = serverTimeZoneOffsetHours - 1;
 //        properties.setUseTimeZone("GMT" + (manualTimeZoneOffsetHours > 0 ? "+" : "")  + manualTimeZoneOffsetHours + ":00");
         properties.setUseTimeZone(String.format("%s%s","GMT",new String(localZ)));
+        System.out.println("Manual Timezone: "+ String.format("%s%s","GMT",new String(localZ)));
         ClickHouseDataSource dataSourceManualTz = new ClickHouseDataSource("jdbc:clickhouse://localhost:8123", properties);
         connectionManualTz = dataSourceManualTz.getConnection();
         connectionServerTz.createStatement().execute("CREATE DATABASE IF NOT EXISTS test");
