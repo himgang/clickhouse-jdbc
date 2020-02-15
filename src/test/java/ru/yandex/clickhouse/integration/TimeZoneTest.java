@@ -11,6 +11,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import org.testng.Assert;
@@ -32,13 +33,14 @@ public class TimeZoneTest {
     public void setUp() throws Exception {
         ClickHouseDataSource datasourceServerTz = new ClickHouseDataSource("jdbc:clickhouse://localhost:8123", new ClickHouseProperties());
         connectionServerTz = datasourceServerTz.getConnection();
+        TimeZone serverTimeZone = connectionServerTz.getTimeZone();
         ClickHouseProperties properties = new ClickHouseProperties();
         properties.setUseServerTimeZone(false);
         LocalDateTime dateTime = LocalDateTime.now();
-        String localZone = dateTime.atZone(ZoneId.systemDefault()).getOffset().getId().replace("Z", "+00:00");
-        System.out.println("localZone: "+ localZone);
-        LocalTime lTime = LocalTime.parse(new String(localZone.substring(1)), DateTimeFormatter.ofPattern( "HH:mm"));
-        System.out.println("Server Time: "+ connectionServerTz.getTimeZone().getID());
+        String serverZone = dateTime.atZone(serverTimeZone.toZoneId()).getOffset().getId().replace("Z", "+00:00");
+        System.out.println("localZone: "+ serverZone);
+        LocalTime lTime = LocalTime.parse(new String(serverZone.substring(1)), DateTimeFormatter.ofPattern( "HH:mm"));
+        System.out.println("Server Time: "+ serverTimeZone.getID());
         String lTimeS = lTime.minusHours(1).toString();
         System.out.println("lTime: "+lTimeS);
         properties.setUseTimeZone(String.format("%s%s","GMT+",lTimeS));
