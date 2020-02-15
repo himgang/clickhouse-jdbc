@@ -37,7 +37,10 @@ public class TimeZoneTest {
         LocalDateTime dateTime = LocalDateTime.now();
         String localZone = dateTime.atZone(ZoneId.systemDefault()).getOffset().getId().replace("Z", "+00:00");
         LocalTime lTime = LocalTime.parse(new String(localZone.substring(1)), DateTimeFormatter.ofPattern( "HH:mm"));
-        properties.setUseTimeZone(String.format("%s%s","GMT",lTime.minusHours(1).toString()));
+        System.out.println("Server Time: "+ connectionServerTz.getTimeZone().getID());
+        String lTimeS = lTime.minusHours(1).toString();
+        System.out.println("lTime: "+lTimeS);
+        properties.setUseTimeZone(String.format("%s%s","GMT+",lTimeS));
         ClickHouseDataSource dataSourceManualTz = new ClickHouseDataSource("jdbc:clickhouse://localhost:8123", properties);
         connectionManualTz = dataSourceManualTz.getConnection();
         connectionServerTz.createStatement().execute("CREATE DATABASE IF NOT EXISTS test");
