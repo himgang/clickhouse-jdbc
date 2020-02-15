@@ -38,7 +38,7 @@ public class TimeZoneTest {
         String localZone = dateTime.atZone(ZoneId.systemDefault()).getOffset().getId().replace("Z", "+00:00");
         
         char[] localZ= localZone.toCharArray();
-        System.out.println("localZ: "+ localZ);
+        System.out.println("localZ: "+ localZ.toString());
         localZ[2]=(char)((Character.getNumericValue(localZ[2])-1)+'0');
         System.out.println("ServerTimezone: "+ serverTimeZone.getDisplayName());
 //        int serverTimeZoneOffsetHours = (int) TimeUnit.MILLISECONDS.toHours(serverTimeZone.getOffset(currentTime));
