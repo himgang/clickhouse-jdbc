@@ -7,9 +7,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import org.testng.Assert;
@@ -31,21 +32,12 @@ public class TimeZoneTest {
     public void setUp() throws Exception {
         ClickHouseDataSource datasourceServerTz = new ClickHouseDataSource("jdbc:clickhouse://localhost:8123", new ClickHouseProperties());
         connectionServerTz = datasourceServerTz.getConnection();
-        TimeZone serverTimeZone = connectionServerTz.getTimeZone();
         ClickHouseProperties properties = new ClickHouseProperties();
         properties.setUseServerTimeZone(false);
         LocalDateTime dateTime = LocalDateTime.now();
         String localZone = dateTime.atZone(ZoneId.systemDefault()).getOffset().getId().replace("Z", "+00:00");
-        
-        char[] localZ= localZone.toCharArray();
-        System.out.println("localZ: "+ localZone);
-        localZ[2]=(char)((Character.getNumericValue(localZ[2])-1)+'0');
-        System.out.println("ServerTimezone: "+ serverTimeZone.getDisplayName());
-//        int serverTimeZoneOffsetHours = (int) TimeUnit.MILLISECONDS.toHours(serverTimeZone.getOffset(currentTime));
-//        int manualTimeZoneOffsetHours = serverTimeZoneOffsetHours - 1;
-//        properties.setUseTimeZone("GMT" + (manualTimeZoneOffsetHours > 0 ? "+" : "")  + manualTimeZoneOffsetHours + ":00");
-        properties.setUseTimeZone(String.format("%s%s","GMT",new String(localZ)));
-        System.out.println("Manual Timezone: "+ String.format("%s%s","GMT",new String(localZ)));
+        LocalTime lTime = LocalTime.parse(new String(localZone.substring(1)), DateTimeFormatter.ofPattern( "HH:mm"));
+        properties.setUseTimeZone(String.format("%s%s","GMT",lTime.minusHours(1).toString()));
         ClickHouseDataSource dataSourceManualTz = new ClickHouseDataSource("jdbc:clickhouse://localhost:8123", properties);
         connectionManualTz = dataSourceManualTz.getConnection();
         connectionServerTz.createStatement().execute("CREATE DATABASE IF NOT EXISTS test");
