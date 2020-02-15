@@ -162,7 +162,7 @@ public class ClickHousePreparedStatementTest {
             TimeZone.getTimeZone("Asia/Tokyo"),
             new ClickHouseProperties());
         s.setDate(1, new Date(1557168043000L));
-        assertParamMatches(s, "'2019-05-07'");
+        assertParamMatches(s, "'2019-05-06'");
     }
 
     @Test
