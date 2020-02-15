@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -34,16 +35,12 @@ public class TimeZoneTest {
         ClickHouseDataSource datasourceServerTz = new ClickHouseDataSource("jdbc:clickhouse://localhost:8123", new ClickHouseProperties());
         connectionServerTz = datasourceServerTz.getConnection();
         TimeZone serverTimeZone = connectionServerTz.getTimeZone();
+
         ClickHouseProperties properties = new ClickHouseProperties();
         properties.setUseServerTimeZone(false);
         LocalDateTime dateTime = LocalDateTime.now();
-        String serverZone = dateTime.atZone(serverTimeZone.toZoneId()).getOffset().getId().replace("Z", "+00:00");
-        System.out.println("localZone: "+ serverZone);
-        LocalTime lTime = LocalTime.parse(new String(serverZone.substring(1)), DateTimeFormatter.ofPattern( "HH:mm"));
-        System.out.println("Server Time: "+ serverTimeZone.getID());
-        String lTimeS = lTime.minusHours(1).toString();
-        System.out.println("lTime: "+lTimeS);
-        properties.setUseTimeZone(String.format("%s%s","GMT+",lTimeS));
+        String localZone = dateTime.atZone(ZoneId.ofOffset("GMT", ZoneOffset.ofTotalSeconds((serverTimeZone.getRawOffset()-3600000)/1000))).getOffset().getId().replace("Z", "+00:00");
+        properties.setUseTimeZone(String.format("%s%s","GMT",localZone));
         ClickHouseDataSource dataSourceManualTz = new ClickHouseDataSource("jdbc:clickhouse://localhost:8123", properties);
         connectionManualTz = dataSourceManualTz.getConnection();
         connectionServerTz.createStatement().execute("CREATE DATABASE IF NOT EXISTS test");
