@@ -36,6 +36,7 @@ public class TimeZoneTest {
         properties.setUseServerTimeZone(false);
         LocalDateTime dateTime = LocalDateTime.now();
         String localZone = dateTime.atZone(ZoneId.systemDefault()).getOffset().getId().replace("Z", "+00:00");
+        System.out.println("localZone: "+ localZone);
         LocalTime lTime = LocalTime.parse(new String(localZone.substring(1)), DateTimeFormatter.ofPattern( "HH:mm"));
         System.out.println("Server Time: "+ connectionServerTz.getTimeZone().getID());
         String lTimeS = lTime.minusHours(1).toString();
